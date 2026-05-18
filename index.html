@@ -1,0 +1,342 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sebastián Vargas | 3D Coder Portfolio</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/avatar.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+    <!-- Particles background for CSS layout -->
+    <div id="ambient-particles" class="bg-particles"></div>
+
+    <!-- Header Navigation -->
+    <header class="header glass-panel">
+        <a href="#" class="logo">
+            <span class="logo-accent">&lt;</span>SV<span class="logo-accent">.3D /&gt;</span>
+        </a>
+        <nav class="nav-menu" id="nav-menu">
+            <ul>
+                <li><a href="#hero" class="nav-link active"><i class="fa-solid fa-house"></i> Inicio</a></li>
+                <li><a href="#about" class="nav-link"><i class="fa-solid fa-user"></i> Sobre Mí</a></li>
+                <li><a href="#skills" class="nav-link"><i class="fa-solid fa-layer-group"></i> Habilidades</a></li>
+                <li><a href="#projects" class="nav-link"><i class="fa-solid fa-code"></i> Proyectos</a></li>
+                <li><a href="#contact" class="nav-link"><i class="fa-solid fa-envelope"></i> Contacto</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <button id="theme-toggle" class="icon-btn" aria-label="Cambiar Tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <button id="mobile-menu-btn" class="icon-btn mobile-only" aria-label="Menú Móvil">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero & 3D Interactive Section -->
+        <section id="hero" class="hero-section">
+            <div class="hero-container">
+                <!-- Text Intro (Left Side) -->
+                <div class="hero-intro glass-panel">
+                    <div class="badge"><i class="fa-solid fa-gamepad"></i> Setup Integrado en 3D</div>
+                    <h1>Hola, soy <span class="text-glow">Sebastián Vargas</span></h1>
+                    <p class="subtitle">Desarrollador Web & Modelador 3D en formación</p>
+                    <p class="description">
+                        Bienvenido a mi espacio digital. Esta página integra programación moderna y arte en 3D interactivo. Explora mi escritorio virtual diseñado en Blender y personalízalo en tiempo real con el panel de control.
+                    </p>
+                    <div class="hero-actions-group">
+                        <a href="#projects" class="btn btn-primary"><i class="fa-solid fa-folder-open"></i> Ver Proyectos</a>
+                        <a href="#contact" class="btn btn-secondary"><i class="fa-solid fa-paper-plane"></i> Contacto</a>
+                    </div>
+                </div>
+
+                <!-- 3D Canvas & Controls (Right Side) -->
+                <div class="canvas-wrapper glass-panel">
+                    <div class="canvas-header">
+                        <div class="window-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="canvas-title"><i class="fa-solid fa-cube"></i> Visor 3D: Setup de Programador</span>
+                        <div class="connection-status">
+                            <span class="status-pulse"></span>
+                            <span class="status-text">INTERACTIVO</span>
+                        </div>
+                    </div>
+                    
+                    <!-- WebGL Canvas Container -->
+                    <div id="canvas-container" class="canvas-container">
+                        <!-- Three.js Canvas gets injected here -->
+                        <div class="loader-overlay" id="loader-overlay">
+                            <div class="spinner"></div>
+                            <p>Inicializando Escena 3D...</p>
+                        </div>
+                    </div>
+
+                    <!-- 3D Customization Controls -->
+                    <div class="canvas-controls">
+                        <div class="control-group">
+                            <label><i class="fa-solid fa-palette"></i> Tema del Setup:</label>
+                            <div class="color-options">
+                                <button class="color-btn active" data-theme="cyberpunk" style="background: linear-gradient(135deg, #ff007f, #00f0ff);" title="Cyberpunk"></button>
+                                <button class="color-btn" data-theme="rgb" style="background: linear-gradient(135deg, #ff0000, #00ff00, #0000ff);" title="RGB Wave"></button>
+                                <button class="color-btn" data-theme="forest" style="background: linear-gradient(135deg, #11998e, #38ef7d);" title="Natural Forest"></button>
+                                <button class="color-btn" data-theme="mono" style="background: linear-gradient(135deg, #3a3d40, #181719);" title="Minimal Carbono"></button>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="light-intensity"><i class="fa-solid fa-lightbulb"></i> Iluminación:</label>
+                            <input type="range" id="light-intensity" min="0.2" max="2" step="0.1" value="1.0">
+                        </div>
+
+                        <div class="control-group-toggle">
+                            <button id="particles-toggle" class="btn btn-toggle active">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Partículas Código
+                            </button>
+                            <button id="camera-reset" class="btn btn-toggle">
+                                <i class="fa-solid fa-camera"></i> Reset Cámara
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Me Section (Sobre Mí) -->
+        <section id="about" class="about-section container">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-user-tag"></i> Sobre Mí</h2>
+                <div class="header-line"></div>
+            </div>
+            <div class="about-grid">
+                <div class="about-image-wrapper">
+                    <div class="avatar-border">
+                        <img src="assets/images/avatar.png" alt="Sebastián Vargas Avatar" class="avatar-img">
+                    </div>
+                    <div class="avatar-glow"></div>
+                </div>
+                <div class="about-content glass-panel">
+                    <h3>¡Hola de nuevo!</h3>
+                    <p>
+                        Soy un estudiante apasionado por el desarrollo de software y el arte digital. Este proyecto forma parte de mis materias curriculares y me permite experimentar con el flujo de trabajo completo: desde el modelado en 3D con Blender hasta la exportación para entornos web interactivos mediante WebGL.
+                    </p>
+                    <p>
+                        Mi enfoque principal es combinar la lógica del código con interfaces interactivas atractivas. Disfruto construyendo mundos digitales, tanto en código plano como en entornos tridimensionales inmersivos.
+                    </p>
+                    <div class="personal-info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Especialidad:</span>
+                            <span class="info-value">WebGL / Blender 3D / Web Dev</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Intereses:</span>
+                            <span class="info-value">Motores de Videojuegos, UI/UX, Animación</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section (Habilidades) -->
+        <section id="skills" class="skills-section container">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-layer-group"></i> Habilidades</h2>
+                <div class="header-line"></div>
+            </div>
+            <div class="skills-grid">
+                <!-- Blender Skill Card -->
+                <div class="skill-card glass-panel">
+                    <div class="skill-icon blender-icon">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <h3>Modelado 3D (Blender)</h3>
+                    <p>Creación de modelos low-poly, texturizado básico, optimización de geometría y exportación eficiente en formato GLTF/GLB.</p>
+                    <div class="skill-bar-container">
+                        <div class="skill-bar" style="width: 85%;"></div>
+                        <span class="skill-percent">85%</span>
+                    </div>
+                </div>
+
+                <!-- Three.js Skill Card -->
+                <div class="skill-card glass-panel">
+                    <div class="skill-icon webgl-icon">
+                        <i class="fa-solid fa-circle-nodes"></i>
+                    </div>
+                    <h3>WebGL & Three.js</h3>
+                    <p>Carga de modelos 3D, configuración de luces, cámaras, renderizadores, texturas, y programación de interactividad con JavaScript.</p>
+                    <div class="skill-bar-container">
+                        <div class="skill-bar" style="width: 80%;"></div>
+                        <span class="skill-percent">80%</span>
+                    </div>
+                </div>
+
+                <!-- Web Development Skill Card -->
+                <div class="skill-card glass-panel">
+                    <div class="skill-icon dev-icon">
+                        <i class="fa-solid fa-code-branch"></i>
+                    </div>
+                    <h3>Frontend (HTML5, CSS3, JS)</h3>
+                    <p>Desarrollo responsivo usando Flexbox y Grid, diseño con efectos de vidrio (glassmorphism), y manipulación dinámica del DOM.</p>
+                    <div class="skill-bar-container">
+                        <div class="skill-bar" style="width: 90%;"></div>
+                        <span class="skill-percent">90%</span>
+                    </div>
+                </div>
+
+                <!-- Rive & Animation Skill Card -->
+                <div class="skill-card glass-panel">
+                    <div class="skill-icon animation-icon">
+                        <i class="fa-solid fa-film"></i>
+                    </div>
+                    <h3>Animación Web (Rive)</h3>
+                    <p>Integración y manipulación de gráficos animados vectoriales interactivos con lógica y máquinas de estados en tiempo real.</p>
+                    <div class="skill-bar-container">
+                        <div class="skill-bar" style="width: 75%;"></div>
+                        <span class="skill-percent">75%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section (Proyectos) -->
+        <section id="projects" class="projects-section container">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-diagram-project"></i> Proyectos Destacados</h2>
+                <div class="header-line"></div>
+            </div>
+            
+            <div class="projects-grid">
+                <!-- Rive Animation Project -->
+                <div class="project-card glass-panel">
+                    <div class="project-img-wrapper">
+                        <!-- Neon glow element inside project card image -->
+                        <div class="project-glow"></div>
+                        <!-- Canvas placeholder or icon for Rive project -->
+                        <div class="project-placeholder rive-bg">
+                            <i class="fa-solid fa-play-circle animate-pulse"></i>
+                            <span class="rive-tag">Rive Animación</span>
+                        </div>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-tags">
+                            <span class="tag">Rive</span>
+                            <span class="tag">Interactivo</span>
+                            <span class="tag">Animación</span>
+                        </div>
+                        <h3>Interactividad Rive</h3>
+                        <p>
+                            Un proyecto de animación vectorial avanzada donde se explora la máquina de estados de Rive. Reacciona a las pulsaciones del usuario, el cursor y el estado del sitio en tiempo real.
+                        </p>
+                        <a href="https://rive.app" target="_blank" rel="noopener noreferrer" class="btn-text">
+                            Ver Detalles <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Blender 3D Desk Setup Project -->
+                <div class="project-card glass-panel">
+                    <div class="project-img-wrapper">
+                        <div class="project-glow"></div>
+                        <div class="project-placeholder setup-bg">
+                            <i class="fa-solid fa-laptop-code"></i>
+                            <span class="rive-tag">Blender 3D</span>
+                        </div>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-tags">
+                            <span class="tag">Blender</span>
+                            <span class="tag">3D Low-Poly</span>
+                            <span class="tag">GLTF</span>
+                        </div>
+                        <h3>Modelado del Setup en 3D</h3>
+                        <p>
+                            Diseño geométrico de un mini set-up de programación. Incluye modelado individual de escritorio, monitor doble, laptop, teclado, mouse y un elemento creativo decorativo.
+                        </p>
+                        <a href="#hero" class="btn-text">
+                            Probar Interactividad <i class="fa-solid fa-arrow-down"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section (Contacto) -->
+        <section id="contact" class="contact-section container">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-comment-dots"></i> Contacto & Redes</h2>
+                <div class="header-line"></div>
+            </div>
+            
+            <div class="contact-grid">
+                <div class="contact-info glass-panel">
+                    <h3>¡Hablemos de tecnología!</h3>
+                    <p>Si deseas colaborar en proyectos de desarrollo web, animación interactiva o modelado 3D, no dudes en escribirme o conectarte a través de mis redes.</p>
+                    
+                    <ul class="contact-list">
+                        <li>
+                            <i class="fa-solid fa-envelope"></i>
+                            <div>
+                                <span>Correo Electrónico</span>
+                                <strong>sebastian.vargas@ejemplo.com</strong>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-location-dot"></i>
+                            <div>
+                                <span>Ubicación</span>
+                                <strong>México (Disponible remoto)</strong>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="social-links-panel glass-panel">
+                    <h3>Redes Profesionales</h3>
+                    <div class="social-buttons">
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="social-btn github">
+                            <i class="fa-brands fa-github"></i> GitHub
+                        </a>
+                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-btn linkedin">
+                            <i class="fa-brands fa-linkedin"></i> LinkedIn
+                        </a>
+                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-btn twitter">
+                            <i class="fa-brands fa-x-twitter"></i> Twitter
+                        </a>
+                    </div>
+                    <div class="disclaimer-note">
+                        <p><i class="fa-solid fa-info-circle"></i> Modelo 3D personalizable en el visor de arriba.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Sebastián Vargas. Creado con Three.js, HTML5 y CSS3.</p>
+        <p class="footer-subtext">Optimizado para navegadores modernos con soporte WebGL.</p>
+    </footer>
+
+    <!-- Three.js Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    
+    <!-- Main Logic Script -->
+    <script src="script.js"></script>
+</body>
+</html>
