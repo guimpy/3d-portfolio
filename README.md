@@ -18,6 +18,8 @@ Welcome to my personal portfolio project! This is a modern, responsive website t
 - **Light / Dark Mode**: Global theme switcher adapting all panels and background accent colors.
 
 ---
+## video of blender proyect
+[Watch] https://youtu.be/2jRsniwFTAU?si=Ph2P-0b5_LcD9A0t
 
 ## 📦 3D Scene Components (List of Elements)
 
