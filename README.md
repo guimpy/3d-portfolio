@@ -34,6 +34,8 @@ The default 3D setup models the following 7 elements (as specified in the academ
    
 
 ---
+## Blender video: https://youtu.be/2jRsniwFTAU?si=s9LNp4hz5sayrx-Q
+
 
 ## 🛠️ How to Import Your Blender Model
 
