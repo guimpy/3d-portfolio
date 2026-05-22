@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    WEBGL & PORTFOLIO ENGINE - SEBASTIÁN VARGAS
    ========================================================================== */
 
@@ -20,8 +20,7 @@ let ambientLight, directionalLight;
 let ledLights = []; // LED light objects for themes
 let deskMaterial, screenMaterials = [], keyboardBacklight;
 let proceduralGroup, customModelGroup;
-let codeParticles = [];
-let particlesEnabled = true;
+let fanMeshes = []; // Spinning computer cabinet fans
 let activeTheme = 'cyberpunk';
 let rotationSpeed = 0.003;
 let autoRotate = true;
@@ -193,6 +192,7 @@ function init3D() {
     customModelGroup = new THREE.Group();
     scene.add(proceduralGroup);
     scene.add(customModelGroup);
+    proceduralGroup.visible = false; // Hide procedural group until model load attempt is done
 
     // Generate beautiful default procedural setup
     createProceduralSetup();
@@ -441,30 +441,176 @@ function createProceduralSetup() {
     mouseGroup.add(wheel);
     proceduralGroup.add(mouseGroup);
 
-    // --- E. Sleek Closed Laptop ---
-    const laptopGroup = new THREE.Group();
-    laptopGroup.position.set(-3.8, 3.22, 0.5);
-    laptopGroup.rotation.y = 0.4;
+    // --- E. Premium Gamer PC Cabinet (Gabinete) ---
+    const cabinetGroup = new THREE.Group();
+    cabinetGroup.position.set(-4.0, 3.2, 0.4);
+    cabinetGroup.rotation.y = 0.5; // Rotate to show off the glass side panel
 
-    const lapBaseGeo = new THREE.BoxGeometry(2.4, 0.07, 1.7);
-    const lapBase = new THREE.Mesh(lapBaseGeo, metalMaterial);
-    lapBase.castShadow = true;
-    lapBase.receiveShadow = true;
-    laptopGroup.add(lapBase);
+    // Casing C-Frame Materials
+    const caseMaterial = new THREE.MeshStandardMaterial({ color: 0x111115, roughness: 0.5, metalness: 0.8 });
+    const glassMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.25, roughness: 0.05, metalness: 0.1 });
+    const moboMaterial = new THREE.MeshStandardMaterial({ color: 0x1c1e22, roughness: 0.7 });
+    const gpuMaterial = new THREE.MeshStandardMaterial({ color: 0x222228, roughness: 0.3, metalness: 0.6 });
+    const fanRingMaterial = keyboardBacklight; // Glows with active theme
 
-    // Closed lid (with tiny glowing logo)
-    const lapLidGeo = new THREE.BoxGeometry(2.38, 0.05, 1.68);
-    const lapLid = new THREE.Mesh(lapLidGeo, metalMaterial);
-    lapLid.position.set(0, 0.06, 0);
-    lapLid.castShadow = true;
-    laptopGroup.add(lapLid);
+    // 1. Casing Structure
+    // Cabinet Bottom Base
+    const cabBaseGeo = new THREE.BoxGeometry(1.2, 0.1, 1.8);
+    const cabBase = new THREE.Mesh(cabBaseGeo, caseMaterial);
+    cabBase.position.y = 0.05;
+    cabBase.castShadow = true;
+    cabBase.receiveShadow = true;
+    cabinetGroup.add(cabBase);
 
-    const logoGeo = new THREE.BoxGeometry(0.3, 0.01, 0.3);
-    const logoMat = keyboardBacklight;
-    const logo = new THREE.Mesh(logoGeo, logoMat);
-    logo.position.set(0, 0.09, 0);
-    laptopGroup.add(logo);
-    proceduralGroup.add(laptopGroup);
+    // Cabinet Top Plate
+    const cabTopGeo = new THREE.BoxGeometry(1.2, 0.1, 1.8);
+    const cabTop = new THREE.Mesh(cabTopGeo, caseMaterial);
+    cabTop.position.y = 2.05;
+    cabTop.castShadow = true;
+    cabTop.receiveShadow = true;
+    cabinetGroup.add(cabTop);
+
+    // Cabinet Back Wall
+    const cabBackGeo = new THREE.BoxGeometry(1.2, 1.9, 0.1);
+    const cabBack = new THREE.Mesh(cabBackGeo, caseMaterial);
+    cabBack.position.set(0, 1.05, -0.85);
+    cabBack.castShadow = true;
+    cabBack.receiveShadow = true;
+    cabinetGroup.add(cabBack);
+
+    // Cabinet Left Side Solid Metal Wall
+    const cabLeftGeo = new THREE.BoxGeometry(0.1, 1.9, 1.8);
+    const cabLeft = new THREE.Mesh(cabLeftGeo, caseMaterial);
+    cabLeft.position.set(-0.55, 1.05, 0);
+    cabLeft.castShadow = true;
+    cabinetGroup.add(cabLeft);
+
+    // Cabinet Right Side TEMPERED GLASS Panel (translucent)
+    const cabGlassGeo = new THREE.BoxGeometry(0.02, 1.9, 1.76);
+    const cabGlass = new THREE.Mesh(cabGlassGeo, glassMaterial);
+    cabGlass.position.set(0.55, 1.05, 0);
+    cabinetGroup.add(cabGlass);
+
+    // 2. Motherboard (Mobo) mounted on Left interior wall
+    const moboGeo = new THREE.BoxGeometry(0.04, 1.5, 1.3);
+    const mobo = new THREE.Mesh(moboGeo, moboMaterial);
+    mobo.position.set(-0.48, 1.1, 0);
+    mobo.castShadow = true;
+    cabinetGroup.add(mobo);
+
+    // RAM memory sticks (details)
+    const ramGeo = new THREE.BoxGeometry(0.02, 0.3, 0.04);
+    const ramMat = keyboardBacklight; // Glows!
+    for (let i = 0; i < 4; i++) {
+        const ram = new THREE.Mesh(ramGeo, ramMat);
+        ram.position.set(-0.44, 1.3, -0.1 + i * 0.08);
+        cabinetGroup.add(ram);
+    }
+
+    // AIO Liquid CPU Block cooler
+    const cpuBlockGeo = new THREE.BoxGeometry(0.08, 0.35, 0.35);
+    const cpuBlockMat = gpuMaterial;
+    const cpuBlock = new THREE.Mesh(cpuBlockGeo, cpuBlockMat);
+    cpuBlock.position.set(-0.44, 1.1, -0.3);
+    cabinetGroup.add(cpuBlock);
+
+    // Glowing logo on CPU block
+    const cpuLogoGeo = new THREE.BoxGeometry(0.01, 0.15, 0.15);
+    const cpuLogo = new THREE.Mesh(cpuLogoGeo, fanRingMaterial);
+    cpuLogo.position.set(-0.395, 1.1, -0.3);
+    cabinetGroup.add(cpuLogo);
+
+    // 3. High-End GPU (Graphics Card) mounted horizontally
+    const gpuGroup = new THREE.Group();
+    gpuGroup.position.set(-0.25, 0.9, 0.15);
+
+    const gpuMainGeo = new THREE.BoxGeometry(0.38, 0.28, 0.95);
+    const gpuMain = new THREE.Mesh(gpuMainGeo, gpuMaterial);
+    gpuMain.castShadow = true;
+    gpuGroup.add(gpuMain);
+
+    // GPU Glowing RGB lightbar accent
+    const gpuBarGeo = new THREE.BoxGeometry(0.02, 0.04, 0.85);
+    const gpuBar = new THREE.Mesh(gpuBarGeo, fanRingMaterial);
+    gpuBar.position.set(0.191, 0, 0);
+    gpuGroup.add(gpuBar);
+
+    // GPU fan intakes (2 cylinders)
+    const gpuFanGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.02, 12);
+    gpuFanGeo.rotateZ(Math.PI / 2);
+    for (let i = 0; i < 2; i++) {
+        const gpuFan = new THREE.Mesh(gpuFanGeo, caseMaterial);
+        gpuFan.position.set(0.18, 0.04, -0.22 + i * 0.44);
+        gpuGroup.add(gpuFan);
+    }
+    cabinetGroup.add(gpuGroup);
+
+    // 4. Cooling Fans (Intakes/Exhausts with spinning blades)
+    function createPCFan(x, y, z, rotationAxis) {
+        const fanGroup = new THREE.Group();
+        fanGroup.position.set(x, y, z);
+        
+        // Fan outer housing
+        const frameGeo = new THREE.BoxGeometry(0.1, 0.55, 0.55);
+        if (rotationAxis === 'Z') frameGeo.rotateY(Math.PI/2); // Align for top exhaust
+        const frame = new THREE.Mesh(frameGeo, caseMaterial);
+        fanGroup.add(frame);
+
+        // Fan central motor cylinder
+        const rotorGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.1, 12);
+        if (rotationAxis === 'Y') rotorGeo.rotateX(Math.PI/2);
+        else if (rotationAxis === 'Z') rotorGeo.rotateZ(Math.PI/2);
+        const rotor = new THREE.Mesh(rotorGeo, caseMaterial);
+        fanGroup.add(rotor);
+
+        // Fan glowing RGB ring
+        const ringGeo = new THREE.TorusGeometry(0.2, 0.02, 8, 24);
+        if (rotationAxis === 'Y') ringGeo.rotateY(Math.PI/2);
+        const ring = new THREE.Mesh(ringGeo, fanRingMaterial);
+        ring.position.set(rotationAxis === 'Y' ? 0.041 : 0, 0, 0);
+        fanGroup.add(ring);
+
+        // Fan blades assembly (spins!)
+        const bladeAssembly = new THREE.Group();
+        const bladeGeo = new THREE.BoxGeometry(rotationAxis === 'Y' ? 0.02 : 0.36, 0.36, 0.05);
+        const bladeMat = new THREE.MeshStandardMaterial({ color: 0x1d1d24, transparent: true, opacity: 0.8 });
+        
+        for (let i = 0; i < 5; i++) {
+            const blade = new THREE.Mesh(bladeGeo, bladeMat);
+            if (rotationAxis === 'Y') {
+                blade.rotation.x = (i * Math.PI / 2.5);
+                blade.rotation.y = 0.25; // pitch angle
+            } else {
+                blade.rotation.z = (i * Math.PI / 2.5);
+                blade.rotation.x = 0.25;
+            }
+            bladeAssembly.add(blade);
+        }
+        fanGroup.add(bladeAssembly);
+        
+        // Save blade reference to animate rotation
+        fanMeshes.push({
+            group: bladeAssembly,
+            axis: rotationAxis === 'Y' ? 'x' : 'z',
+            speed: 0.15
+        });
+
+        return fanGroup;
+    }
+
+    // Rear Fan (Exhaust on back wall)
+    const rearFan = createPCFan(-0.25, 1.45, -0.7, 'Y');
+    cabinetGroup.add(rearFan);
+
+    // Front Fan (Intake fan at bottom)
+    const frontFan1 = createPCFan(0.1, 0.7, 0.8, 'Y');
+    cabinetGroup.add(frontFan1);
+
+    // Front Fan (Intake fan at top)
+    const frontFan2 = createPCFan(0.1, 1.45, 0.8, 'Y');
+    cabinetGroup.add(frontFan2);
+
+    proceduralGroup.add(cabinetGroup);
 
     // --- F. Coffee Mug (Creative Object 1) ---
     const mugGroup = new THREE.Group();
@@ -522,84 +668,102 @@ function createProceduralSetup() {
 }
 
 // Helper to draw a matrix code texture dynamically onto a 2D Canvas
+// Helper to draw a synthwave landscape wallpaper dynamically onto a 2D Canvas
 function createCodeScreenTexture() {
     const canvas = document.createElement('canvas');
     canvas.width = 512;
     canvas.height = 256;
     const ctx = canvas.getContext('2d');
 
-    // Background color
-    ctx.fillStyle = '#05050f';
+    // 1. Sky background (deep dark violet to navy gradient)
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    skyGrad.addColorStop(0, '#0a001a');
+    skyGrad.addColorStop(0.5, '#1e003a');
+    skyGrad.addColorStop(0.7, '#3d0043');
+    skyGrad.addColorStop(1, '#120024');
+    ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw grid matrix lines (simulating terminal/editor)
-    ctx.strokeStyle = '#0e0e28';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < canvas.height; i += 8) {
+    // 2. Neon Sun (centered, right above the horizon)
+    const sunX = canvas.width / 2;
+    const sunY = 120;
+    const sunRadius = 65;
+    
+    const sunGrad = ctx.createLinearGradient(0, sunY - sunRadius, 0, sunY + sunRadius);
+    sunGrad.addColorStop(0, '#ffe600');
+    sunGrad.addColorStop(0.5, '#ff007f');
+    sunGrad.addColorStop(1, '#ff0033');
+    
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
+    ctx.fillStyle = sunGrad;
+    ctx.fill();
+
+    // Scanlines to cut through the sun (Synthwave style)
+    ctx.fillStyle = '#1e003a'; // match background color at that height
+    for (let y = sunY - 20; y < sunY + sunRadius; y += 8) {
+        const thickness = Math.max(1, (y - (sunY - 20)) / 10); // scanlines get thicker near the bottom
+        ctx.fillRect(sunX - sunRadius - 10, y, sunRadius * 2 + 20, thickness);
+    }
+
+    // 3. Grid Floor (bottom half)
+    const horizon = 140;
+    const floorHeight = canvas.height - horizon;
+    
+    // Draw wireframe grid lines
+    ctx.strokeStyle = '#00f0ff';
+    ctx.lineWidth = 1.5;
+    
+    // Vertical perspective lines
+    const numVertLines = 16;
+    for (let i = 0; i <= numVertLines; i++) {
+        const xOffset = (i / numVertLines) * canvas.width;
         ctx.beginPath();
-        ctx.moveTo(0, i);
-        ctx.lineTo(canvas.width, i);
+        // Lines start from the center point of the horizon
+        ctx.moveTo(canvas.width / 2, horizon);
+        // And expand outwards to the bottom edge
+        const bottomX = ((i - numVertLines / 2) * 2.5) * (canvas.width / numVertLines) + canvas.width / 2;
+        ctx.lineTo(bottomX, canvas.height);
         ctx.stroke();
     }
 
-    // Code lines drawing parameters
-    const codeColors = ['#ff007f', '#00f0ff', '#38ef7d', '#ffffff', '#ffd000', '#9ca3af'];
-    const tabSize = 25;
-    ctx.font = 'bold 12px "JetBrains Mono", Courier, monospace';
+    // Horizontal perspective lines (spaced exponentially)
+    const numHorizLines = 8;
+    for (let i = 0; i < numHorizLines; i++) {
+        // Exponential spacing: closer near the horizon, further at the bottom
+        const ratio = Math.pow(i / (numHorizLines - 1), 2);
+        const y = horizon + ratio * floorHeight;
+        
+        ctx.strokeStyle = '#ff007f';
+        ctx.lineWidth = 1 + (ratio * 1.5); // get thicker as they approach bottom
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
 
-    // Simulated code lines text
-    const lines = [
-        { text: 'import { WebGL, Three } from "universe";', indent: 0 },
-        { text: 'const portfolio = new DeveloperPortfolio({', indent: 0 },
-        { text: 'name: "Sebastián Vargas",', indent: 1 },
-        { text: 'skills: ["WebGL", "Blender", "Dev"],', indent: 1 },
-        { text: 'creativeMode: true', indent: 1 },
-        { text: '});', indent: 0 },
-        { text: '', indent: 0 },
-        { text: 'function renderSetup() {', indent: 0 },
-        { text: 'const scene = WebGL.initScene();', indent: 1 },
-        { text: 'scene.loadModel("blender_setup.glb");', indent: 1 },
-        { text: 'scene.enableRGBGlow({ theme: "Cyberpunk" });', indent: 1 },
-        { text: 'while (creativeMode) {', indent: 1 },
-        { text: 'compileCode();', indent: 2 },
-        { text: 'spawnParticles();', indent: 2 },
-        { text: 'wreakHavoc();', indent: 2 },
-        { text: '}', indent: 1 },
-        { text: '}', indent: 0 },
-        { text: 'renderSetup();', indent: 0 }
-    ];
-
-    let posY = 24;
-    lines.forEach(line => {
-        let posX = 16 + line.indent * tabSize;
-        
-        // Tokenize line to paint with different colors
-        const words = line.text.split(/(\s+|=|\{|\}|\(|\)|\[|\]|;|"|'|,)/);
-        
-        words.forEach(word => {
-            if (!word) return;
-            
-            // Syntax coloring rules (simple)
-            if (['import', 'const', 'new', 'function', 'while', 'return'].includes(word)) {
-                ctx.fillStyle = codeColors[0]; // pink
-            } else if (['portfolio', 'renderSetup', 'compileCode', 'spawnParticles', 'wreakHavoc'].includes(word)) {
-                ctx.fillStyle = codeColors[1]; // cyan
-            } else if (['WebGL', 'Three', 'DeveloperPortfolio'].includes(word)) {
-                ctx.fillStyle = codeColors[4]; // yellow
-            } else if (word.startsWith('"') || word.startsWith("'")) {
-                ctx.fillStyle = codeColors[2]; // green
-            } else if (['{', '}', '(', ')', '[', ']', ';', ',', '='].includes(word)) {
-                ctx.fillStyle = codeColors[5]; // gray
-            } else {
-                ctx.fillStyle = codeColors[3]; // white
-            }
-            
-            ctx.fillText(word, posX, posY);
-            posX += ctx.measureText(word).width;
-        });
-        
-        posY += 13;
-    });
+    // 4. Distant Mountain Silhouette
+    ctx.fillStyle = '#050010';
+    ctx.beginPath();
+    ctx.moveTo(0, horizon);
+    ctx.lineTo(40, horizon - 20);
+    ctx.lineTo(90, horizon - 8);
+    ctx.lineTo(150, horizon - 35);
+    ctx.lineTo(210, horizon - 15);
+    ctx.lineTo(256, horizon - 5);
+    // Right side mountains
+    ctx.lineTo(300, horizon - 25);
+    ctx.lineTo(370, horizon - 10);
+    ctx.lineTo(420, horizon - 40);
+    ctx.lineTo(480, horizon - 15);
+    ctx.lineTo(512, horizon);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw glow mountain outline
+    ctx.strokeStyle = '#ff007f';
+    ctx.lineWidth = 1;
+    ctx.stroke();
 
     const texture = new THREE.CanvasTexture(canvas);
     return texture;
@@ -614,7 +778,7 @@ function loadCustomModel(loaderOverlay) {
     // Attempting to load the user's custom exported model
     // Path matches standard assets folder layout in repository
     loader.load(
-        'assets/3d/setup.glb',
+        '/assets/3d/setup.glb',
         (gltf) => {
             console.log('🎉 Custom Blender model successfully loaded!');
             
@@ -632,12 +796,12 @@ function loadCustomModel(loaderOverlay) {
             
             // Normalize scale to match the view size (about 8-10 units wide)
             const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 9.0 / maxDim;
+            const scale = 200.0 / maxDim;
             model.scale.set(scale, scale, scale);
             
             // Position base of model on our virtual floor (y = 0 or centering it)
             model.position.x = -center.x * scale;
-            model.position.y = (3.0 - (center.y - size.y / 2) * scale); // Align bottom to tabletop height
+            model.position.y = (0 - (center.y - size.y / 4) * scale); // Align bottom to tabletop height
             model.position.z = -center.z * scale;
             
             // Set shadows configuration on loaded components
@@ -711,18 +875,29 @@ function setup3DControls() {
         });
     }
 
-    // 3. Code Particle Emitter Toggle Button
-    const particlesToggle = document.getElementById('particles-toggle');
-    if (particlesToggle) {
-        particlesToggle.addEventListener('click', () => {
-            particlesEnabled = !particlesEnabled;
-            particlesToggle.classList.toggle('active');
+    // 3. Download GLB Setup Exporter Button
+    const downloadBtn = document.getElementById('download-glb');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            const prevRotate = autoRotate;
+            autoRotate = false;
             
-            // Clean active code particles if disabled
-            if (!particlesEnabled) {
-                codeParticles.forEach(p => scene.remove(p.mesh));
-                codeParticles = [];
-            }
+            const exporter = new THREE.GLTFExporter();
+            exporter.parse(customModelGroup,   // ← ASÍ DEBE QUEDAR
+                function (gltf) {
+                    const blob = new Blob([gltf], { type: 'application/octet-stream' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'setup.glb';
+                    link.click();
+                    autoRotate = prevRotate;
+                },
+                function (error) {
+                    console.error('Error exporting GLTF:', error);
+                    autoRotate = prevRotate;
+                },
+                { binary: true } // Export as GLB
+            );
         });
     }
 
@@ -787,96 +962,12 @@ function applyActiveTheme() {
 }
 
 // --------------------------------------------------------------------------
-// 7. Dynamic Code Particles Engine (Emitter)
+// 7. Computer Cabinet Fans Animation Update
 // --------------------------------------------------------------------------
-function spawnCodeParticle() {
-    if (!particlesEnabled) return;
-    
-    // Max particles cap
-    if (codeParticles.length > 50) {
-        const oldP = codeParticles.shift();
-        scene.remove(oldP.mesh);
-    }
-
-    // Code particles representation: small glowing low-poly meshes
-    // We make them look like floating digital bits (cube, sphere, cylinder, tetrahedron)
-    const particleGeometries = [
-        new THREE.BoxGeometry(0.12, 0.12, 0.12),
-        new THREE.TetrahedronGeometry(0.1, 0),
-        new THREE.CylinderGeometry(0.02, 0.02, 0.16, 8)
-    ];
-    
-    // Pick random geometry
-    const geo = particleGeometries[Math.floor(Math.random() * particleGeometries.length)];
-    
-    // Set emissive glow material matching the theme
-    let color = 0x00f0ff;
-    if (activeTheme === 'cyberpunk') color = Math.random() > 0.5 ? 0xff007f : 0x00f0ff;
-    else if (activeTheme === 'forest') color = 0x38ef7d;
-    else if (activeTheme === 'rgb') {
-        const rgbColors = [0xff0055, 0x00ff66, 0x00ffff, 0xff00ff, 0xffd000];
-        color = rgbColors[Math.floor(Math.random() * rgbColors.length)];
-    } else color = 0xffffff;
-
-    const mat = new THREE.MeshBasicMaterial({
-        color: color,
-        transparent: true,
-        opacity: 0.8
+function updateCabinetFans() {
+    fanMeshes.forEach(fan => {
+        fan.group.rotation[fan.axis] += fan.speed;
     });
-
-    const mesh = new THREE.Mesh(geo, mat);
-    
-    // Position floating out of the monitors
-    const posX = (Math.random() - 0.5) * 6; // width span
-    const posY = 3.6 + Math.random() * 0.4;
-    const posZ = -1.0 + (Math.random() - 0.5) * 0.4;
-    mesh.position.set(posX, posY, posZ);
-    
-    scene.add(mesh);
-
-    // Save particle kinematics
-    codeParticles.push({
-        mesh: mesh,
-        speedY: 0.015 + Math.random() * 0.02,
-        speedX: (Math.random() - 0.5) * 0.01,
-        speedZ: 0.01 + Math.random() * 0.015,
-        rotSpeed: (Math.random() - 0.5) * 0.05,
-        life: 1.0 // opacity remaining
-    });
-}
-
-function updateCodeParticles() {
-    // Emitter spawn rate control
-    if (particlesEnabled && Math.random() < 0.08) {
-        spawnCodeParticle();
-    }
-
-    for (let i = codeParticles.length - 1; i >= 0; i--) {
-        const p = codeParticles[i];
-        
-        // Move particle upward and forward (away from monitor screen)
-        p.mesh.position.y += p.speedY;
-        p.mesh.position.x += p.speedX;
-        p.mesh.position.z += p.speedZ;
-        
-        // Rotate
-        p.mesh.rotation.x += p.rotSpeed;
-        p.mesh.rotation.y += p.rotSpeed;
-        
-        // Dissolve life
-        p.life -= 0.008;
-        p.mesh.material.opacity = p.life;
-        
-        // Scale down as it dies
-        const s = p.life;
-        p.mesh.scale.set(s, s, s);
-
-        // Delete dead particles
-        if (p.life <= 0) {
-            scene.remove(p.mesh);
-            codeParticles.splice(i, 1);
-        }
-    }
 }
 
 // --------------------------------------------------------------------------
@@ -921,8 +1012,8 @@ function animate(time) {
         }
     }
 
-    // Particles system update
-    updateCodeParticles();
+    // PC Cabinet fan blades spinning
+    updateCabinetFans();
 
     // Render Frame
     renderer.render(scene, camera);

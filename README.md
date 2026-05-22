@@ -23,15 +23,15 @@ Welcome to my personal portfolio project! This is a modern, responsive website t
 
 The default 3D setup models the following 7 elements (as specified in the academic requirements):
 
-1. **Desk (Escritorio)**: Custom dark tabletop supported by four metallic cylinder legs and topped with a clean desk pad/mat.
-2. **Monitor Left (Monitor 1)**: Flat screen displaying an active code editor texture rendered dynamically.
-3. **Monitor Right (Monitor 2)**: Extended second screen displaying the continuing lines of syntax-highlighted code.
-4. **Mechanical Keyboard (Teclado)**: Base plate with an integrated glowing neon backplate and individually positioned low-poly keycaps (including a long spacebar).
-5. **Gamer Mouse (Mouse)**: Ergonomic curved mouse with an active glowing scroll wheel.
-6. **Closed Laptop (Laptop/PC)**: Compact laptop lying on the desk, complete with a glowing center accent logo.
-7. **Creative Extras**:
-   - **Coffee Mug (Taza)**: A colored ceramic coffee mug with coffee surface and handle.
-   - **Desk Plant (Planta)**: A low-poly hexagonal ceramic pot with geometric green leaves.
+1. **Desk (Escritorio)**: Custom dark tabletop supported.
+2. **Monitor**: Flat screen displaying a game called fortnite
+3. **Mechanical Keyboard (Teclado)**: Base plate with an integrated glowing neon backplate and individually positioned low-poly keycaps (including a long spacebar).
+4. **Gamer Mouse (Mouse)**: Ergonomic curved mouse with an active glowing scroll wheel.
+5. **PC (Laptop/PC)**: A full pc with rgb lights
+6. **Creative Extras**:
+   - **Coffee Cup**: A colored coffee cup with coffee 
+   - **Wall flat TV**: A wall flat tv to watch every show you like
+  
 
 ---
 
