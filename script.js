@@ -778,7 +778,7 @@ function loadCustomModel(loaderOverlay) {
     // Attempting to load the user's custom exported model
     // Path matches standard assets folder layout in repository
     loader.load(
-        '/assets/3d/setup.glb',
+        './assets/3d/setup.glb',
         (gltf) => {
             console.log('🎉 Custom Blender model successfully loaded!');
             
